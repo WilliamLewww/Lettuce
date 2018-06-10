@@ -10,9 +10,10 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
-import core.Drawing;
+import core.*;
 
 public class Main {
+	Input input = new Input();
 	Joiner joiner = new Joiner();
 	
 	private long window;
@@ -42,12 +43,9 @@ public class Main {
 
 		window = glfwCreateWindow(Drawing.screenWidth, Drawing.screenHeight, "Lettuce", NULL, NULL);
 		if ( window == NULL ) { throw new RuntimeException("Failed to create the GLFW window"); }
-
-		glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
-			if ( key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE ) {
-				glfwSetWindowShouldClose(window, true);
-			}
-		});
+		
+		input.linkWindow(window);
+		input.setKeyCallback();
 
 		try ( MemoryStack stack = stackPush() ) {
 			IntBuffer pWidth = stack.mallocInt(1);
@@ -75,7 +73,7 @@ public class Main {
 			update();
 			render();
 			frameEnd = System.nanoTime();
-			deltaTime = frameStart - frameEnd;
+			deltaTime = frameEnd - frameStart;
 		}
 	}
 	
