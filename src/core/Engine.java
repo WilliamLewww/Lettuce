@@ -49,11 +49,17 @@ public class Engine {
 		glfwSwapInterval(1);
 		glfwShowWindow(window);
 		
+		GL.createCapabilities();
+		glOrtho(-Drawing.screenWidth / 2, Drawing.screenWidth / 2, Drawing.screenHeight / 2, -Drawing.screenHeight / 2, 0, 1);
+		
 		joiner.initialize();
 	}
 	
 	public void start() {
-		updateAndRender();
+		while (!glfwWindowShouldClose(window)) {
+			delayEarlyFrames();
+			updateAndRender();
+		}
 	}
 	
 	public void quit() {
@@ -63,17 +69,22 @@ public class Engine {
 		glfwSetErrorCallback(null).free();
 	}
 	
-	private void updateAndRender() {
-		GL.createCapabilities();
-		glOrtho(-Drawing.screenWidth / 2, Drawing.screenWidth / 2, Drawing.screenHeight / 2, -Drawing.screenHeight / 2, 0, 1);
-		
-		while (!glfwWindowShouldClose(window)) {
+	private void delayEarlyFrames() {
+		if ((float)deltaTime / 100000000 < (float)1 / 60) {
 			frameStart = System.nanoTime();
-			update();
-			render();
+			try { Thread.sleep(1); } 
+			catch (InterruptedException e) { e.printStackTrace(); }
 			frameEnd = System.nanoTime();
 			deltaTime = frameEnd - frameStart;
 		}
+	}
+	
+	private void updateAndRender() {		
+		frameStart = System.nanoTime();
+		update();
+		render();
+		frameEnd = System.nanoTime();
+		deltaTime = frameEnd - frameStart;
 	}
 	
 	private void update() {
