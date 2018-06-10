@@ -1,3 +1,5 @@
+package core;
+
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
@@ -10,30 +12,16 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
-import core.*;
+import src.Joiner;
 
-public class Main {
-	Input input = new Input();
-	Joiner joiner = new Joiner();
+public class Engine {
+	static Input input = new Input();
+	static Joiner joiner = new Joiner();
 	
 	private long window;
 	private long frameStart = 0, frameEnd = 0, deltaTime = 0;
-	
-	public static void main(String[] args) {
-		new Main().start();
-	}
 
-	public void start() {
-		initialize();
-		updateAndRender();
-		
-		glfwFreeCallbacks(window);
-		glfwDestroyWindow(window);
-		glfwTerminate();
-		glfwSetErrorCallback(null).free();
-	}
-
-	private void initialize() {
+	public void initialize() {
 		GLFWErrorCallback.createPrint(System.err).set();
 		
 		if (!glfwInit()) { throw new IllegalStateException("Unable to initialize GLFW"); }
@@ -62,6 +50,17 @@ public class Main {
 		glfwShowWindow(window);
 		
 		joiner.initialize();
+	}
+	
+	public void start() {
+		updateAndRender();
+	}
+	
+	public void quit() {
+		glfwFreeCallbacks(window);
+		glfwDestroyWindow(window);
+		glfwTerminate();
+		glfwSetErrorCallback(null).free();
 	}
 	
 	private void updateAndRender() {

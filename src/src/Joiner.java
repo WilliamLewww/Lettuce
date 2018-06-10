@@ -1,3 +1,4 @@
+package src;
 public class Joiner {
 	Player player;
 	Ground ground;
