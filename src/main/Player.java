@@ -1,8 +1,8 @@
-package src;
+package main;
 
 import java.awt.Point;
 
-import core.*;
+import engine.*;
 
 public class Player {
 	Point position;

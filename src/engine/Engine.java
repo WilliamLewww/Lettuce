@@ -1,8 +1,10 @@
-package core;
+package engine;
 
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
+
+import main.Joiner;
 
 import java.nio.*;
 
@@ -11,8 +13,6 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
-
-import src.Joiner;
 
 public class Engine {
 	static Input input = new Input();

@@ -1,6 +1,6 @@
-package src;
+package main;
 
-import core.*;
+import engine.*;
 
 public class Main {
 	static Engine engine = new Engine();

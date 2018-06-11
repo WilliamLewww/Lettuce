@@ -1,7 +1,7 @@
-package src;
+package main;
 import java.awt.Point;
 
-import core.*;
+import engine.*;
 
 public class Ground {
 	static Point position;
