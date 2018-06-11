@@ -11,6 +11,7 @@ public class Player {
 	float velocityX = 0, velocityY = 0;
 	
 	boolean onGround = false;
+	boolean release = false;
 	
 	Player() {
 		position = new Point(100, 100);
@@ -21,6 +22,14 @@ public class Player {
 	public void update(long elapsedTime) {
 		float elapsedTimeMS = (float)elapsedTime / 100000000;
 		
+		horizontalMovement();
+		verticalMovement();
+		
+		position.x += velocityX * elapsedTimeMS;
+		position.y += velocityY * elapsedTimeMS;
+	}
+	
+	private void horizontalMovement() {
 		if (Input.checkKeyDown(262)) {
 			velocityX = 25;
 		}
@@ -32,24 +41,31 @@ public class Player {
 				velocityX = 0;
 			}
 		}
-		
+	}
+	
+	private void verticalMovement() {
 		if (position.y + height >= Ground.position.y) { onGround = true; }
 		
 		if (onGround == false) {
+			if (!Input.checkKeyDown(32) && velocityY < 0) {
+				velocityY += 2;
+			}
 			velocityY += 1;
 		}
 		else {
 			velocityY = 0;
 			position.y = Ground.position.y - height;
 			
-			if (Input.checkKeyDown(32)) {
+			if (!Input.checkKeyDown(32)) {
+				release = true;
+			}
+			
+			if (Input.checkKeyDown(32) && release == true) {
 				onGround = false;
+				release = false;
 				velocityY = -40;
 			}
 		}
-		
-		position.x += velocityX * elapsedTimeMS;
-		position.y += velocityY * elapsedTimeMS;
 	}
 	
 	public void draw() {
