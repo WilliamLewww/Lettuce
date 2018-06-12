@@ -33,7 +33,7 @@ public class QNetwork {
 	public int getAction() {
 		int highestIndex = -1, highestValue = 0;
 		
-		for (int x = 0; x < 4; x++) {
+		for (int x = 0; x < table[0][0].length; x++) {
 			if (table[agentPosition.x][agentPosition.y][x] > highestValue) {
 				highestIndex = x;
 				highestValue = table[agentPosition.x][agentPosition.y][x];
@@ -49,7 +49,7 @@ public class QNetwork {
 		}
 		else {
 			int highestValue = 0;
-			for (int x = 0; x < 4; x++) {
+			for (int x = 0; x < table[0][0].length; x++) {
 				if (table[agentPosition.x][agentPosition.y][x] > highestValue) {
 					highestValue = table[agentPosition.x][agentPosition.y][x];
 				}
