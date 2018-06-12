@@ -3,11 +3,13 @@ package main;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import engine.*;
 
 public class Player {
 	QNetwork network;
+	int networkAction = -1;
 	
 	Point position, gridPosition;
 	int width, height;
@@ -20,7 +22,7 @@ public class Player {
 	
 	List<List<Point>> trailList = new ArrayList<List<Point>>();
 	List<Point> tempTrail = new ArrayList<Point>();
-	int[] trailColor = { 0, 255, 0, 5 };
+	int[] trailColor = { 0, 255, 0, 1 };
 	
 	Player() {		
 		position = new Point(50, 50);
@@ -35,6 +37,7 @@ public class Player {
 		network.setAgentPosition(gridPosition.x, gridPosition.y);
 		
 		network.setGoal(5, 5);
+		networkAction = network.getAction();
 	}
 	
 	public void reset() {
@@ -48,14 +51,14 @@ public class Player {
 			trailList.add(new ArrayList<Point>(tempTrail));
 			tempTrail.clear();
 			tempTrail.add(getMidpoint());
+			networkAction = network.getAction();
 		}
 	}
 	
 	public void update(long elapsedTime) {
 		//float elapsedTimeMS = (float)elapsedTime / 100000000;
 		
-		horizontalMovement();
-		verticalMovement();
+		movement();
 		
 		if (checkIfOnGrid() && (tempTrail.get(tempTrail.size() - 1).x != getMidpoint().getX() ||
 				tempTrail.get(tempTrail.size() - 1).y != getMidpoint().getY())) {
@@ -99,15 +102,55 @@ public class Player {
 		return false;
 	}
 	
-	private void horizontalMovement() {
-		if ((!keyDown && Input.checkKeyDown(262) && !Input.checkKeyDown(263)) || motionState == 0) {
+	private void movement() {
+		handleRandomAction();
+		
+		// (!keyDown && Input.checkKeyDown(262) && !Input.checkKeyDown(263))
+		if ((motionState == 0 || networkAction == 0) && gridPosition.x < 19) {
 			moveRight();
 			keyDown = true;
 		}
 		
-		if ((!keyDown && !Input.checkKeyDown(262) && Input.checkKeyDown(263)) || motionState == 1) { 
+		// (!keyDown && !Input.checkKeyDown(262) && Input.checkKeyDown(263))
+		if ((motionState == 1 || networkAction == 1) && gridPosition.x > 1) { 
 			moveLeft();
 			keyDown = true;
+		}
+		
+		// (!keyDown && Input.checkKeyDown(264) && !Input.checkKeyDown(265))
+		if ((motionState == 2 || networkAction == 2) && gridPosition.y < 13) {
+			moveDown();
+			keyDown = true;
+		}
+		
+		// (!keyDown && !Input.checkKeyDown(264) && Input.checkKeyDown(265))
+		if ((motionState == 3 || networkAction == 3) && gridPosition.y > 1) { 
+			moveUp();
+			keyDown = true;
+		}
+	}
+	
+	private void handleRandomAction() {
+		Random random = new Random();
+		
+		if (networkAction == -1) {
+			networkAction = random.nextInt((3 - 0) + 1);
+		}
+		
+		if (gridPosition.x == 19 && networkAction == 0) {
+			networkAction = random.nextInt((3 - 0) + 1);
+		}
+		
+		if (gridPosition.x == 1 && networkAction == 1) {
+			networkAction = random.nextInt((3 - 0) + 1);
+		}
+		
+		if (gridPosition.y == 13 && networkAction == 2) {
+			networkAction = random.nextInt((3 - 0) + 1);
+		}
+		
+		if (gridPosition.y == 1 && networkAction == 3) {
+			networkAction = random.nextInt((3 - 0) + 1);
 		}
 	}
 	
@@ -122,6 +165,7 @@ public class Player {
 				tempTrail.add(getMidpoint());
 				reset();
 			}
+			networkAction = network.getAction();
 			motionState = -1;
 		}
 		else {
@@ -140,22 +184,11 @@ public class Player {
 				tempTrail.add(getMidpoint());
 				reset();
 			}
+			networkAction = network.getAction();
 			motionState = -1;
 		}
 		else {
 			motionState = 1;
-		}
-	}
-	
-	private void verticalMovement() {
-		if ((!keyDown && Input.checkKeyDown(264) && !Input.checkKeyDown(265)) || motionState == 2) {
-			moveDown();
-			keyDown = true;
-		}
-		
-		if ((!keyDown && !Input.checkKeyDown(264) && Input.checkKeyDown(265)) || motionState == 3) { 
-			moveUp();
-			keyDown = true;
 		}
 	}
 	
@@ -170,6 +203,7 @@ public class Player {
 				tempTrail.add(getMidpoint());
 				reset();
 			}
+			networkAction = network.getAction();
 			motionState = -1;
 		}
 		else {
@@ -188,6 +222,7 @@ public class Player {
 				tempTrail.add(getMidpoint());
 				reset();
 			}
+			networkAction = network.getAction();
 			motionState = -1;
 		}
 		else {
