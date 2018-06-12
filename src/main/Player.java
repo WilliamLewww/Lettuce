@@ -7,6 +7,8 @@ import java.util.List;
 import engine.*;
 
 public class Player {
+	QNetwork network;
+	
 	Point position, gridPosition;
 	int width, height;
 	int[] color = { 255, 125, 150, 255 };
@@ -20,7 +22,7 @@ public class Player {
 	List<Point> tempTrail = new ArrayList<Point>();
 	int[] trailColor = { 0, 255, 0, 5 };
 	
-	Player() {
+	Player() {		
 		position = new Point(50, 50);
 		gridPosition = new Point(1, 1);
 		
@@ -28,6 +30,9 @@ public class Player {
 		height = 50;
 		
 		tempTrail.add(getMidpoint());
+		
+		network = new QNetwork(40, 28, 4);
+		network.setAgentPosition(gridPosition.x, gridPosition.y);
 	}
 	
 	public void reset() {
@@ -61,12 +66,14 @@ public class Player {
 	public void draw() {
 		Drawing.drawRect(position, width, height, color);
 		
+		//network.draw();
+		
 		if (tempTrail.size() > 1 ) {
-			Drawing.drawLineSegmented(tempTrail, trailColor);
+			Drawing.drawLineSegmented(tempTrail, 5, trailColor);
 		}
 		
 		for (List<Point> trail : trailList) {
-			Drawing.drawLineSegmented(trail, trailColor);
+			Drawing.drawLineSegmented(trail, 5, trailColor);
 		}
 	}
 	
