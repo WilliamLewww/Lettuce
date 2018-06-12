@@ -75,7 +75,12 @@ public class QNetwork {
 					if (table[x][y][z] > 0) {
 						switch (z) {
 						case 0:
-							Drawing.drawTriangle(new Point2D.Double(x * 50, y * 50), 50, 50, 90, color);
+							if (x == goal.x && y == goal.y) {
+								Drawing.drawRect(new Point(x * 50, y * 50), 50, 50, color);
+							}
+							else {
+								Drawing.drawTriangle(new Point2D.Double(x * 50, y * 50), 50, 50, 90, color);
+							}
 							break;
 						case 1:
 							Drawing.drawTriangle(new Point2D.Double(x * 50, y * 50), 50, 50, 270, color);
