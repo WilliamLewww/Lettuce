@@ -18,7 +18,7 @@ public class Player {
 	
 	List<List<Point>> trailList = new ArrayList<List<Point>>();
 	List<Point> tempTrail = new ArrayList<Point>();
-	int[] trailColor = { 0, 255, 0, 25 };
+	int[] trailColor = { 0, 255, 0, 5 };
 	
 	Player() {
 		position = new Point(50, 50);
@@ -27,7 +27,7 @@ public class Player {
 		width = 50;
 		height = 50;
 		
-		tempTrail.add(new Point(position.x + (width / 2), position.y + (height / 2)));
+		tempTrail.add(getMidpoint());
 	}
 	
 	public void reset() {
@@ -40,7 +40,7 @@ public class Player {
 			
 			trailList.add(new ArrayList<Point>(tempTrail));
 			tempTrail.clear();
-			tempTrail.add(new Point(position.x + (width / 2), position.y + (height / 2)));
+			tempTrail.add(getMidpoint());
 		}
 	}
 	
@@ -50,7 +50,32 @@ public class Player {
 		horizontalMovement();
 		verticalMovement();
 		
+		if (checkIfOnGrid() && (tempTrail.get(tempTrail.size() - 1).x != getMidpoint().getX() ||
+				tempTrail.get(tempTrail.size() - 1).y != getMidpoint().getY())) {
+			tempTrail.add(getMidpoint());
+		}
+		
 		keyDown = checkArrowPressed();
+	}
+	
+	public void draw() {
+		Drawing.drawRect(position, width, height, color);
+		
+		for (List<Point> trail : trailList) {
+			Drawing.drawLineSegmented(trail, trailColor);
+		}
+	}
+	
+	private Point getMidpoint() {
+		return new Point(position.x + (width / 2), position.y + (height / 2));
+	}
+	
+	private boolean checkIfOnGrid() {
+		if (position.x % 50 == 0 && position.y % 50 == 0) {
+			return true;
+		}
+		
+		return false;
 	}
 	
 	private boolean checkArrowPressed() {
@@ -77,7 +102,6 @@ public class Player {
 		position.x += movementSpeed;
 		
 		if (position.x % 50 == 0) {
-			tempTrail.add(new Point(position.x + (width / 2), position.y + (height / 2)));
 			gridPosition.x += 1;
 			motionState = -1;
 		}
@@ -90,7 +114,6 @@ public class Player {
 		position.x -= movementSpeed;
 		
 		if (position.x % 50 == 0) {
-			tempTrail.add(new Point(position.x + (width / 2), position.y + (height / 2)));
 			gridPosition.x -= 1;
 			motionState = -1;
 		}
@@ -115,7 +138,6 @@ public class Player {
 		position.y += movementSpeed;
 		
 		if (position.y % 50 == 0) {
-			tempTrail.add(new Point(position.x + (width / 2), position.y + (height / 2)));
 			gridPosition.y += 1;
 			motionState = -1;
 		}
@@ -128,20 +150,11 @@ public class Player {
 		position.y -= movementSpeed;
 		
 		if (position.y % 50 == 0) {
-			tempTrail.add(new Point(position.x + (width / 2), position.y + (height / 2)));
 			gridPosition.y -= 1;
 			motionState = -1;
 		}
 		else {
 			motionState = 3;
-		}
-	}
-	
-	public void draw() {
-		Drawing.drawRect(position, width, height, color);
-		
-		for (List<Point> trail : trailList) {
-			Drawing.drawLineSegmented(trail, trailColor);
 		}
 	}
 }
