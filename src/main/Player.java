@@ -118,6 +118,10 @@ public class Player {
 			gridPosition.x += 1;
 			network.setAgentPosition(gridPosition.x, gridPosition.y);
 			network.setQ(new Point(gridPosition.x - 1, gridPosition.y), 0);
+			if (gridPosition.equals(network.goal)) {
+				tempTrail.add(getMidpoint());
+				reset();
+			}
 			motionState = -1;
 		}
 		else {
@@ -132,6 +136,10 @@ public class Player {
 			gridPosition.x -= 1;
 			network.setAgentPosition(gridPosition.x, gridPosition.y);
 			network.setQ(new Point(gridPosition.x + 1, gridPosition.y), 1);
+			if (gridPosition.equals(network.goal)) {
+				tempTrail.add(getMidpoint());
+				reset();
+			}
 			motionState = -1;
 		}
 		else {
@@ -158,6 +166,10 @@ public class Player {
 			gridPosition.y += 1;
 			network.setAgentPosition(gridPosition.x, gridPosition.y);
 			network.setQ(new Point(gridPosition.x, gridPosition.y - 1), 2);
+			if (gridPosition.equals(network.goal)) {
+				tempTrail.add(getMidpoint());
+				reset();
+			}
 			motionState = -1;
 		}
 		else {
@@ -172,6 +184,10 @@ public class Player {
 			gridPosition.y -= 1;
 			network.setAgentPosition(gridPosition.x, gridPosition.y);
 			network.setQ(new Point(gridPosition.x, gridPosition.y + 1), 3);
+			if (gridPosition.equals(network.goal)) {
+				tempTrail.add(getMidpoint());
+				reset();
+			}
 			motionState = -1;
 		}
 		else {
