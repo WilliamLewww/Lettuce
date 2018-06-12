@@ -61,6 +61,10 @@ public class Player {
 	public void draw() {
 		Drawing.drawRect(position, width, height, color);
 		
+		if (tempTrail.size() > 1 ) {
+			Drawing.drawLineSegmented(tempTrail, trailColor);
+		}
+		
 		for (List<Point> trail : trailList) {
 			Drawing.drawLineSegmented(trail, trailColor);
 		}
