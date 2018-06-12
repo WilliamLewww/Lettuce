@@ -1,6 +1,7 @@
 package engine;
 
 import java.awt.Point;
+import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -9,6 +10,15 @@ public class Drawing {
 	
 	public static float convertColorIntToRGB(int rgbValue) {
 		return (float)rgbValue / 255;
+	}
+	
+	public static void drawLineSegmented(List<Point> points, int[] color) {
+		glBegin(GL_LINE_STRIP);
+		glColor4f(convertColorIntToRGB(color[0]), convertColorIntToRGB(color[1]), convertColorIntToRGB(color[2]), convertColorIntToRGB(color[3]));
+		for (int x = 0; x < points.size(); x++) { 
+		glVertex2f(points.get(x).x - (screenWidth / 2), 
+					points.get(x).y - (screenHeight / 2)); }
+		glEnd();
 	}
 	
 	public static void drawRect(Point position, int width, int height) {

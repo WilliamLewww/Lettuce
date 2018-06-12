@@ -1,4 +1,7 @@
 package main;
+
+import engine.Input;
+
 public class Joiner {
 	Player player;
 	
@@ -8,6 +11,10 @@ public class Joiner {
 	
 	public void update(long elapsedTime) {
 		player.update(elapsedTime);
+		
+		if (Input.checkKeyDown(32)) {
+			player.reset();
+		}
 	}
 	
 	public void draw() {

@@ -52,6 +52,9 @@ public class Engine {
 		GL.createCapabilities();
 		glOrtho(-Drawing.screenWidth / 2, Drawing.screenWidth / 2, Drawing.screenHeight / 2, -Drawing.screenHeight / 2, 0, 1);
 		
+		glEnable(GL_BLEND); 
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		
 		joiner.initialize();
 	}
 	
