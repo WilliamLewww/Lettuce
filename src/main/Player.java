@@ -31,7 +31,7 @@ public class Player {
 		
 		tempTrail.add(getMidpoint());
 		
-		network = new QNetwork(40, 28, 4);
+		network = new QNetwork(20, 14, 4);
 		network.setAgentPosition(gridPosition.x, gridPosition.y);
 	}
 	

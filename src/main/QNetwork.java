@@ -1,6 +1,7 @@
 package main;
 
 import java.awt.Point;
+import java.awt.geom.Point2D;
 
 import engine.Drawing;
 
@@ -64,7 +65,20 @@ public class QNetwork {
 			for (int y = 0; y < table[0].length; y++) {
 				for (int z = 0; z < table[x][y].length; z++) {
 					if (table[x][y][z] > 0) {
-						Drawing.drawRect(new Point(x * 25,  y * 25), 25, 25);
+						switch (z) {
+						case 0:
+							Drawing.drawTriangle(new Point2D.Double(x * 50, y * 50), 50, 50, 0);
+							break;
+						case 1:
+							Drawing.drawTriangle(new Point2D.Double(x * 50, y * 50), 50, 50, 180);
+							break;
+						case 2:
+							Drawing.drawTriangle(new Point2D.Double(x * 50, y * 50), 50, 50, 90);
+							break;
+						case 3:
+							Drawing.drawTriangle(new Point2D.Double(x * 50, y * 50), 50, 50, 270);
+							break;
+						}
 					}
 				}
 			}

@@ -1,6 +1,7 @@
 package engine;
 
 import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -63,6 +64,34 @@ public class Drawing {
 			glVertex2d(vectors[x].x, vectors[x].y);
 		}
 		glEnd();
+	}
+	
+	public static void drawTriangle(Point2D.Double position, int width, int height, double angle) {
+		Point2D.Double[] vectors = {
+				new Point2D.Double(0, 0),
+				new Point2D.Double(0.5, 1.0),
+				new Point2D.Double(1, 0)
+		};
+		
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glTranslatef((float)position.x + (width / 2) - (screenWidth / 2), (float)position.y + (height / 2) - (screenHeight / 2), 0);
+		glRotatef((float)-angle, 0, 0, 1);
+		glTranslatef((float)-(position.x + (width / 2) - (screenWidth / 2)), (float)-(position.y + (height / 2) - (screenHeight / 2)), 0);
+		glBegin(GL_TRIANGLES);
+		glColor4f(1, 1, 1, 1);
+		for (int x = 0; x < 3; x++) {
+			vectors[x].x *= width;
+			vectors[x].y *= height;
+			vectors[x].x += position.x;
+			vectors[x].y += position.y;
+			vectors[x].x -= screenWidth / 2;
+			vectors[x].y -= screenHeight / 2;
+
+			glVertex2d(vectors[x].x, vectors[x].y);
+		}
+		glEnd();
+		glPopMatrix();
 	}
 	
 	public static void drawNumber(int number, float x, float y, float scale) {
