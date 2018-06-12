@@ -11,9 +11,6 @@ public class Player {
 	
 	float velocityX = 0, velocityY = 0;
 	
-	boolean onGround = false;
-	boolean release = false;
-	
 	Player() {
 		position = new Point(100, 100);
 		width = 50;
@@ -31,41 +28,26 @@ public class Player {
 	}
 	
 	private void horizontalMovement() {
-		if (Input.checkKeyDown(262)) {
+		velocityX = 0;
+		
+		if (Input.checkKeyDown(262) && !Input.checkKeyDown(263)) {
 			velocityX = 25;
 		}
-		else {
-			if (Input.checkKeyDown(263)) {
-				velocityX = -25;
-			}
-			else {
-				velocityX = 0;
-			}
+		
+		if (!Input.checkKeyDown(262) && Input.checkKeyDown(263)) { 
+			velocityX = -25;
 		}
 	}
 	
 	private void verticalMovement() {
-		if (position.y + height >= Ground.position.y) { onGround = true; }
+		velocityY = 0;
 		
-		if (onGround == false) {
-			if (!Input.checkKeyDown(32) && velocityY < 0) {
-				velocityY += 2;
-			}
-			velocityY += 1;
+		if (Input.checkKeyDown(264) && !Input.checkKeyDown(265)) {
+			velocityY = 25;
 		}
-		else {
-			velocityY = 0;
-			position.y = Ground.position.y - height;
-			
-			if (!Input.checkKeyDown(32)) {
-				release = true;
-			}
-			
-			if (Input.checkKeyDown(32) && release == true) {
-				onGround = false;
-				release = false;
-				velocityY = -40;
-			}
+		
+		if (!Input.checkKeyDown(264) && Input.checkKeyDown(265)) { 
+			velocityY = -25;
 		}
 	}
 	
