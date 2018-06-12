@@ -7,12 +7,15 @@ import engine.Drawing;
 
 public class QNetwork {
 	Point agentPosition, goal;
-	int[][][] table;
+	double[][][] table;
 	
 	float gamma = 0.5f;
+	float delta = 1.2f;
+	
+	int[] color = { 255, 0, 0, 25 };
 	
 	QNetwork(int width, int height, int actions) {
-		table = new int[width][height][actions];
+		table = new double[width][height][actions];
 		agentPosition = new Point();
 		goal = new Point();
 	}
@@ -21,7 +24,7 @@ public class QNetwork {
 		goal.setLocation(x, y);
 	}
 	
-	// QNetwork -> setGoal ||| setAgentPosition -> getAction -> movePlayer -> setQ
+	// QNetwork -> setGoal -> setAgentPosition ||| getAction -> setAgentPosition -> movePlayer -> setQ
 	
 	// 0 = Right
 	// 1 = Left
@@ -32,7 +35,8 @@ public class QNetwork {
 		agentPosition.setLocation(x, y);
 	}
 	public int getAction() {
-		int highestIndex = -1, highestValue = 0;
+		int highestIndex = -1;
+		double highestValue = 0;
 		
 		for (int x = 0; x < table[0][0].length; x++) {
 			if (table[agentPosition.x][agentPosition.y][x] > highestValue) {
@@ -45,18 +49,22 @@ public class QNetwork {
 	}
 	
 	public void setQ(Point prePosition, int preAction) {
-		if (agentPosition.equals(goal) && table[goal.x][goal.y][0] == 0) {
-			table[goal.x][goal.y][0] = 100;
-		}
-		else {
-			int highestValue = 0;
-			for (int x = 0; x < table[0][0].length; x++) {
-				if (table[agentPosition.x][agentPosition.y][x] > highestValue) {
-					highestValue = table[agentPosition.x][agentPosition.y][x];
-				}
+		double highestValue = 0;
+		for (int x = 0; x < table[0][0].length; x++) {
+			if (table[agentPosition.x][agentPosition.y][x] > highestValue) {
+				highestValue = table[agentPosition.x][agentPosition.y][x];
 			}
-			
-			table[prePosition.x][prePosition.y][preAction] = (int)(gamma * highestValue);
+		}
+		
+		table[prePosition.x][prePosition.y][preAction] = gamma * highestValue;
+		
+		if (agentPosition.equals(goal)) {
+			if (table[goal.x][goal.y][0] == 0) {
+				table[goal.x][goal.y][0] = 100;
+			}
+			else {
+				table[goal.x][goal.y][0] = table[goal.x][goal.y][0] * delta;
+			}
 		}
 	}
 	
@@ -67,16 +75,16 @@ public class QNetwork {
 					if (table[x][y][z] > 0) {
 						switch (z) {
 						case 0:
-							Drawing.drawTriangle(new Point2D.Double(x * 50, y * 50), 50, 50, 0);
+							Drawing.drawTriangle(new Point2D.Double(x * 50, y * 50), 50, 50, 90, color);
 							break;
 						case 1:
-							Drawing.drawTriangle(new Point2D.Double(x * 50, y * 50), 50, 50, 180);
+							Drawing.drawTriangle(new Point2D.Double(x * 50, y * 50), 50, 50, 270, color);
 							break;
 						case 2:
-							Drawing.drawTriangle(new Point2D.Double(x * 50, y * 50), 50, 50, 90);
+							Drawing.drawTriangle(new Point2D.Double(x * 50, y * 50), 50, 50, 0, color);
 							break;
 						case 3:
-							Drawing.drawTriangle(new Point2D.Double(x * 50, y * 50), 50, 50, 270);
+							Drawing.drawTriangle(new Point2D.Double(x * 50, y * 50), 50, 50, 180, color);
 							break;
 						}
 					}

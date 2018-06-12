@@ -33,6 +33,8 @@ public class Player {
 		
 		network = new QNetwork(20, 14, 4);
 		network.setAgentPosition(gridPosition.x, gridPosition.y);
+		
+		network.setGoal(5, 5);
 	}
 	
 	public void reset() {
@@ -66,7 +68,7 @@ public class Player {
 	public void draw() {
 		Drawing.drawRect(position, width, height, color);
 		
-		//network.draw();
+		network.draw();
 		
 		if (tempTrail.size() > 1 ) {
 			Drawing.drawLineSegmented(tempTrail, 5, trailColor);
@@ -114,6 +116,8 @@ public class Player {
 		
 		if (position.x % 50 == 0) {
 			gridPosition.x += 1;
+			network.setAgentPosition(gridPosition.x, gridPosition.y);
+			network.setQ(new Point(gridPosition.x - 1, gridPosition.y), 0);
 			motionState = -1;
 		}
 		else {
@@ -126,6 +130,8 @@ public class Player {
 		
 		if (position.x % 50 == 0) {
 			gridPosition.x -= 1;
+			network.setAgentPosition(gridPosition.x, gridPosition.y);
+			network.setQ(new Point(gridPosition.x + 1, gridPosition.y), 1);
 			motionState = -1;
 		}
 		else {
@@ -150,6 +156,8 @@ public class Player {
 		
 		if (position.y % 50 == 0) {
 			gridPosition.y += 1;
+			network.setAgentPosition(gridPosition.x, gridPosition.y);
+			network.setQ(new Point(gridPosition.x, gridPosition.y - 1), 2);
 			motionState = -1;
 		}
 		else {
@@ -162,6 +170,8 @@ public class Player {
 		
 		if (position.y % 50 == 0) {
 			gridPosition.y -= 1;
+			network.setAgentPosition(gridPosition.x, gridPosition.y);
+			network.setQ(new Point(gridPosition.x, gridPosition.y + 1), 3);
 			motionState = -1;
 		}
 		else {
