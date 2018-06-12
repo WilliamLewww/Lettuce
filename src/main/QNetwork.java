@@ -12,7 +12,7 @@ public class QNetwork {
 	float gamma = 0.5f;
 	float delta = 1.2f;
 	
-	int[] color = { 255, 0, 0, 25 };
+	int[] color = { 255, 0, 0 , 255 };
 	
 	QNetwork(int width, int height, int actions) {
 		table = new double[width][height][actions];
@@ -34,6 +34,7 @@ public class QNetwork {
 	public void setAgentPosition(int x, int y) {
 		agentPosition.setLocation(x, y);
 	}
+	
 	public int getAction() {
 		int highestIndex = -1;
 		double highestValue = 0;
@@ -79,22 +80,26 @@ public class QNetwork {
 								Drawing.drawRect(new Point(x * 50, y * 50), 50, 50, color);
 							}
 							else {
-								Drawing.drawTriangle(new Point2D.Double(x * 50, y * 50), 50, 50, 90, color);
+								Drawing.drawTriangle(new Point2D.Double((x * 50) + 30, (y * 50) + 15), 20, 20, 90, color, getAlphaRelativeToGoal(table[x][y][z]));
 							}
 							break;
 						case 1:
-							Drawing.drawTriangle(new Point2D.Double(x * 50, y * 50), 50, 50, 270, color);
+							Drawing.drawTriangle(new Point2D.Double(x * 50, (y * 50) + 15), 20, 20, 270, color, getAlphaRelativeToGoal(table[x][y][z]));
 							break;
 						case 2:
-							Drawing.drawTriangle(new Point2D.Double(x * 50, y * 50), 50, 50, 0, color);
+							Drawing.drawTriangle(new Point2D.Double((x * 50) + 15, (y * 50) + 30), 20, 20, 0, color, getAlphaRelativeToGoal(table[x][y][z]));
 							break;
 						case 3:
-							Drawing.drawTriangle(new Point2D.Double(x * 50, y * 50), 50, 50, 180, color);
+							Drawing.drawTriangle(new Point2D.Double((x * 50) + 15, y * 50), 20, 20, 180, color, getAlphaRelativeToGoal(table[x][y][z]));
 							break;
 						}
 					}
 				}
 			}
 		}
+	}
+	
+	private int getAlphaRelativeToGoal(double value) {
+		return (int)((value / table[goal.x][goal.y][0]) * 255);
 	}
 }
