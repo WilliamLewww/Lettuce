@@ -16,16 +16,10 @@ public class Player {
 	int[] color = { 255, 125, 150, 255 };
 	
 	int movementSpeed = 50;
-	int newSpeed = -1;
-	
-	boolean keyDown = false;
-	boolean changedSpeed = false;
 	
 	int motionState = -1;
 	
-	List<List<Point>> trailList = new ArrayList<List<Point>>();
-	List<Point> tempTrail = new ArrayList<Point>();
-	int[] trailColor = { 0, 255, 0, 1 };
+	Trail trail;
 	
 	Player() {		
 		position = new Point(50, 50);
@@ -34,7 +28,7 @@ public class Player {
 		width = 50;
 		height = 50;
 		
-		tempTrail.add(getMidpoint());
+		trail = new Trail(getMidpoint());
 		
 		network = new QNetwork(20, 14, 4);
 		network.setAgentPosition(gridPosition.x, gridPosition.y);
@@ -54,15 +48,14 @@ public class Player {
 	
 	public void reset() {
 		if (gridPosition.x != 1 || gridPosition.y != 1) {
+			trail.addPoint(getMidpoint());
+			
 			position = new Point(50, 50);
 			gridPosition = new Point(1, 1);
 			
-			keyDown = false;
 			motionState = -1;
 			
-			trailList.add(new ArrayList<Point>(tempTrail));
-			tempTrail.clear();
-			tempTrail.add(getMidpoint());
+			trail.reset(getMidpoint());
 			networkAction = network.getAction();
 		}
 	}
@@ -72,65 +65,13 @@ public class Player {
 		
 		movement();
 		
-		if (checkIfOnGrid() && (tempTrail.get(tempTrail.size() - 1).x != getMidpoint().getX() ||
-				tempTrail.get(tempTrail.size() - 1).y != getMidpoint().getY())) {
-			tempTrail.add(getMidpoint());
-			if (newSpeed != -1) {
-				movementSpeed = newSpeed;
-				newSpeed = -1;
-			}
+		if (checkIfOnGrid()) {
+			trail.addPoint(getMidpoint());
 		}
-		
-		if (changedSpeed == false) {
-			if (Input.checkKeyDown(262)) {
-				switch (movementSpeed) {
-				case 5:
-					newSpeed = 10;
-					break;
-				case 10:
-					newSpeed = 25;
-					break;
-				case 25:
-					newSpeed = 50;
-					break;
-				}
-				
-				changedSpeed = true;
-			}
-			
-			if (Input.checkKeyDown(263)) {
-				switch (movementSpeed) {
-				case 10:
-					newSpeed = 5;
-					break;
-				case 25:
-					newSpeed = 10;
-					break;
-				case 50:
-					newSpeed = 25;
-					break;
-				}
-				
-				changedSpeed = true;
-			}
-		}
-		
-		if (keyDown == false) {
-			changedSpeed = false;
-		}
-		
-		keyDown = checkArrowPressed();
 	}
 	
 	public void draw() {		
-//		if (tempTrail.size() > 1 ) {
-//			Drawing.drawLineSegmented(tempTrail, 5, trailColor);
-//		}
-//		
-//		for (List<Point> trail : trailList) {
-//			Drawing.drawLineSegmented(trail, 5, trailColor);
-//		}
-		
+		trail.draw();
 		network.draw();
 		
 		Drawing.drawRect(position, width, height, color);
@@ -148,75 +89,73 @@ public class Player {
 		return false;
 	}
 	
-	private boolean checkArrowPressed() {
-		if (Input.checkKeyDown(262) || Input.checkKeyDown(263) || Input.checkKeyDown(264) || Input.checkKeyDown(265)) {
-			return true;
-		}
-		
-		return false;
-	}
-	
 	private void movement() {
-		handleRandomAction();
+		if (motionState == -1) {
+			handleRandomAction();
+		}
 		
 		// (!keyDown && Input.checkKeyDown(262) && !Input.checkKeyDown(263))
 		if ((motionState == 0 || networkAction == 0) && gridPosition.x < 19) {
 			moveRight();
-			keyDown = true;
 		}
 		
 		// (!keyDown && !Input.checkKeyDown(262) && Input.checkKeyDown(263))
 		if ((motionState == 1 || networkAction == 1) && gridPosition.x > 0) { 
 			moveLeft();
-			keyDown = true;
 		}
 		
 		// (!keyDown && Input.checkKeyDown(264) && !Input.checkKeyDown(265))
 		if ((motionState == 2 || networkAction == 2) && gridPosition.y < 13) {
 			moveDown();
-			keyDown = true;
 		}
 		
 		// (!keyDown && !Input.checkKeyDown(264) && Input.checkKeyDown(265))
 		if ((motionState == 3 || networkAction == 3) && gridPosition.y > 0) { 
 			moveUp();
-			keyDown = true;
 		}
 	}
 	
 	private void handleRandomAction() {
 		Random random = new Random();
+		List<Integer> boundsList = new ArrayList<Integer>();
+		boundsList.add(0);
+		boundsList.add(1);
+		boundsList.add(2);
+		boundsList.add(3);
+		
+		if (gridPosition.x == 19) {
+			boundsList.remove(Integer.valueOf(0));
+		}
+		
+		if (gridPosition.x == 0) {
+			boundsList.remove(Integer.valueOf(1));
+		}
+		
+		if (gridPosition.y == 13) {
+			boundsList.remove(Integer.valueOf(2));
+		}
+		
+		if (gridPosition.y == 0) {
+			boundsList.remove(Integer.valueOf(3));
+		}
 		
 		if (networkAction == -1) {
 			networkAction = random.nextInt((3 - 0) + 1);
 		}
-		
-		if (gridPosition.x == 19 && networkAction == 0) {
-			networkAction = random.nextInt((3 - 0) + 1);
-		}
-		
-		if (gridPosition.x == 0 && networkAction == 1) {
-			networkAction = random.nextInt((3 - 0) + 1);
-		}
-		
-		if (gridPosition.y == 13 && networkAction == 2) {
-			networkAction = random.nextInt((3 - 0) + 1);
-		}
-		
-		if (gridPosition.y == 0 && networkAction == 3) {
-			networkAction = random.nextInt((3 - 0) + 1);
+		else {
+			if (motionState == -1) {
+				networkAction = network.getAction(boundsList);
+			}
 		}
 	}
 	
 	private void handleGoal() {
 		if (gridPosition.equals(network.goal)) {
-			tempTrail.add(getMidpoint());
 			reset();
 		}
 		else {
 			for (Point negativeGoal : network.negativeGoals) {
 				if (gridPosition.equals(negativeGoal)) {
-					tempTrail.add(getMidpoint());
 					reset();
 				}
 			}
@@ -232,7 +171,6 @@ public class Player {
 			network.setQ(new Point(gridPosition.x - 1, gridPosition.y), 0);
 			handleGoal();
 			
-			networkAction = network.getAction();
 			motionState = -1;
 		}
 		else {
@@ -249,7 +187,6 @@ public class Player {
 			network.setQ(new Point(gridPosition.x + 1, gridPosition.y), 1);
 			handleGoal();
 			
-			networkAction = network.getAction();
 			motionState = -1;
 		}
 		else {
@@ -266,7 +203,6 @@ public class Player {
 			network.setQ(new Point(gridPosition.x, gridPosition.y - 1), 2);
 			handleGoal();
 			
-			networkAction = network.getAction();
 			motionState = -1;
 		}
 		else {
@@ -283,7 +219,6 @@ public class Player {
 			network.setQ(new Point(gridPosition.x, gridPosition.y + 1), 3);
 			handleGoal();
 			
-			networkAction = network.getAction();
 			motionState = -1;
 		}
 		else {

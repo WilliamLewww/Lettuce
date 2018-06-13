@@ -48,6 +48,38 @@ public class QNetwork {
 		agentPosition.setLocation(x, y);
 	}
 	
+	public int getAction(List<Integer> availableDirections) {
+		int highestIndex = availableDirections.get(0);
+		double highestValue = table[agentPosition.x][agentPosition.y][availableDirections.get(0)];
+		List<Integer> similar = new ArrayList<Integer>();
+		
+		if (availableDirections.size() == 1) {
+			return availableDirections.get(0);
+		}
+		
+		for (int x = 1; x < availableDirections.size(); x++) {
+			if (table[agentPosition.x][agentPosition.y][availableDirections.get(x)] > highestValue) {
+				highestIndex = availableDirections.get(x);
+				highestValue = table[agentPosition.x][agentPosition.y][availableDirections.get(x)];
+			}
+		}
+		
+		similar.add(highestIndex);
+		for (int x = 0; x < availableDirections.size(); x++) {
+			if (table[agentPosition.x][agentPosition.y][availableDirections.get(x)] == highestValue &&
+					availableDirections.get(x) != highestIndex) {
+				similar.add(availableDirections.get(x));
+			}
+		}
+		
+		if (similar.size() > 1) {
+			Random random = new Random();
+			return similar.get(random.nextInt(similar.size()));
+		}
+		
+		return highestIndex;
+	}
+	
 	public int getAction() {
 		int highestIndex = 0;
 		double highestValue = table[agentPosition.x][agentPosition.y][0];
