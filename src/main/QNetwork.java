@@ -17,7 +17,7 @@ public class QNetwork {
 	float gamma = 0.8f;
 	float delta = 1.2f;
 	
-	float negativeFeedback = -1.0f;
+	float negativeFeedback = -0.05f;
 	
 	int[] color = { 0, 255, 0 , 255 };
 	int[] colorN = { 255, 0, 0, 255 };

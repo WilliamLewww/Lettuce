@@ -15,9 +15,12 @@ public class Player {
 	int width, height;
 	int[] color = { 255, 125, 150, 255 };
 	
-	int movementSpeed = 5;
+	int movementSpeed = 50;
+	int newSpeed = -1;
 	
 	boolean keyDown = false;
+	boolean changedSpeed = false;
+	
 	int motionState = -1;
 	
 	List<List<Point>> trailList = new ArrayList<List<Point>>();
@@ -36,8 +39,16 @@ public class Player {
 		network = new QNetwork(20, 14, 4);
 		network.setAgentPosition(gridPosition.x, gridPosition.y);
 		
-		network.setGoal(10, 10);
-		network.addNegativeGoal(3, 3);
+		network.setGoal(13, 10);
+		network.addNegativeGoal(12, 9);
+		network.addNegativeGoal(7, 5);
+		network.addNegativeGoal(9, 3);
+		network.addNegativeGoal(13, 9);
+		network.addNegativeGoal(14, 9);
+		network.addNegativeGoal(12, 9);
+		network.addNegativeGoal(12, 10);
+		network.addNegativeGoal(15, 6);
+		network.addNegativeGoal(11, 12);
 		networkAction = network.getAction();
 	}
 	
@@ -64,23 +75,65 @@ public class Player {
 		if (checkIfOnGrid() && (tempTrail.get(tempTrail.size() - 1).x != getMidpoint().getX() ||
 				tempTrail.get(tempTrail.size() - 1).y != getMidpoint().getY())) {
 			tempTrail.add(getMidpoint());
+			if (newSpeed != -1) {
+				movementSpeed = newSpeed;
+				newSpeed = -1;
+			}
+		}
+		
+		if (changedSpeed == false) {
+			if (Input.checkKeyDown(262)) {
+				switch (movementSpeed) {
+				case 5:
+					newSpeed = 10;
+					break;
+				case 10:
+					newSpeed = 25;
+					break;
+				case 25:
+					newSpeed = 50;
+					break;
+				}
+				
+				changedSpeed = true;
+			}
+			
+			if (Input.checkKeyDown(263)) {
+				switch (movementSpeed) {
+				case 10:
+					newSpeed = 5;
+					break;
+				case 25:
+					newSpeed = 10;
+					break;
+				case 50:
+					newSpeed = 25;
+					break;
+				}
+				
+				changedSpeed = true;
+			}
+		}
+		
+		if (keyDown == false) {
+			changedSpeed = false;
 		}
 		
 		keyDown = checkArrowPressed();
 	}
 	
-	public void draw() {
-		Drawing.drawRect(position, width, height, color);
+	public void draw() {		
+//		if (tempTrail.size() > 1 ) {
+//			Drawing.drawLineSegmented(tempTrail, 5, trailColor);
+//		}
+//		
+//		for (List<Point> trail : trailList) {
+//			Drawing.drawLineSegmented(trail, 5, trailColor);
+//		}
 		
 		network.draw();
 		
-		if (tempTrail.size() > 1 ) {
-			Drawing.drawLineSegmented(tempTrail, 5, trailColor);
-		}
-		
-		for (List<Point> trail : trailList) {
-			Drawing.drawLineSegmented(trail, 5, trailColor);
-		}
+		Drawing.drawRect(position, width, height, color);
 	}
 	
 	private Point getMidpoint() {
