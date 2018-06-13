@@ -22,11 +22,18 @@ public class QNetwork {
 	int[] color = { 0, 255, 0 , 255 };
 	int[] colorN = { 255, 0, 0, 255 };
 	
-	QNetwork(int width, int height, int actions) {
+	boolean negativeChain = false;
+	
+	QNetwork(int width, int height, int actions, boolean negativeFeedback, boolean negativeChain) {
 		table = new double[width][height][actions];
 		agentPosition = new Point();
 		goal = new Point();
 		negativeGoals = new ArrayList<Point>();
+		
+		this.negativeChain = negativeChain;
+		if (negativeFeedback == false) {
+			this.negativeFeedback = 0.0f;
+		}
 	}
 	
 	public void setGoal(int x, int y) {
@@ -117,8 +124,18 @@ public class QNetwork {
 		
 		table[prePosition.x][prePosition.y][preAction] += negativeFeedback;
 		
+		boolean isNegativeGoal = false;
 		if (highestValue < 0) {
-			table[prePosition.x][prePosition.y][preAction] += (gamma * (highestValue / 2));
+			for (Point negativeGoal : negativeGoals) {
+				if (agentPosition.equals(negativeGoal)) {
+					table[prePosition.x][prePosition.y][preAction] += (gamma * highestValue);
+					isNegativeGoal = true;
+				}
+			}
+			
+			if (isNegativeGoal == false && negativeChain) {
+				table[prePosition.x][prePosition.y][preAction] += (gamma * highestValue) / 8;
+			}
 		}
 		else {
 			table[prePosition.x][prePosition.y][preAction] += gamma * highestValue;

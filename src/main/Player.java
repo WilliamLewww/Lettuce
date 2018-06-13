@@ -30,19 +30,49 @@ public class Player {
 		
 		trail = new Trail(getMidpoint());
 		
-		network = new QNetwork(20, 14, 4);
+		network = new QNetwork(20, 14, 4, true, false);
 		network.setAgentPosition(gridPosition.x, gridPosition.y);
 		
-		network.setGoal(13, 10);
-		network.addNegativeGoal(12, 9);
-		network.addNegativeGoal(7, 5);
-		network.addNegativeGoal(9, 3);
-		network.addNegativeGoal(13, 9);
-		network.addNegativeGoal(14, 9);
-		network.addNegativeGoal(12, 9);
+		network.setGoal(19, 9);
+		network.addNegativeGoal(10, 10);
+		network.addNegativeGoal(11, 10);
 		network.addNegativeGoal(12, 10);
-		network.addNegativeGoal(15, 6);
-		network.addNegativeGoal(11, 12);
+		network.addNegativeGoal(13, 10);
+		network.addNegativeGoal(14, 10);
+		network.addNegativeGoal(15, 10);
+		network.addNegativeGoal(16, 10);
+		network.addNegativeGoal(17, 10);
+		network.addNegativeGoal(18, 10);
+		network.addNegativeGoal(19, 10);
+		
+		network.addNegativeGoal(10, 5);
+		network.addNegativeGoal(10, 6);
+		network.addNegativeGoal(10, 7);
+		network.addNegativeGoal(10, 9);
+		
+		network.addNegativeGoal(11, 9);
+		
+		network.addNegativeGoal(12, 5);
+		network.addNegativeGoal(12, 7);
+		network.addNegativeGoal(12, 8);
+		network.addNegativeGoal(12, 9);
+		
+		network.addNegativeGoal(13, 5);
+		
+		network.addNegativeGoal(14, 5);
+		network.addNegativeGoal(14, 7);
+		
+		network.addNegativeGoal(15, 5);
+		network.addNegativeGoal(15, 7);
+		
+		network.addNegativeGoal(16, 7);
+		
+		network.addNegativeGoal(17, 5);
+		network.addNegativeGoal(17, 7);
+		
+		network.addNegativeGoal(18, 5);
+		network.addNegativeGoal(19, 5);
+		
 		networkAction = network.getAction();
 	}
 	
