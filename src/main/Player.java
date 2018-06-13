@@ -36,7 +36,8 @@ public class Player {
 		network = new QNetwork(20, 14, 4);
 		network.setAgentPosition(gridPosition.x, gridPosition.y);
 		
-		network.setGoal(5, 5);
+		network.setGoal(10, 10);
+		network.addNegativeGoal(3, 3);
 		networkAction = network.getAction();
 	}
 	
@@ -112,7 +113,7 @@ public class Player {
 		}
 		
 		// (!keyDown && !Input.checkKeyDown(262) && Input.checkKeyDown(263))
-		if ((motionState == 1 || networkAction == 1) && gridPosition.x > 1) { 
+		if ((motionState == 1 || networkAction == 1) && gridPosition.x > 0) { 
 			moveLeft();
 			keyDown = true;
 		}
@@ -124,7 +125,7 @@ public class Player {
 		}
 		
 		// (!keyDown && !Input.checkKeyDown(264) && Input.checkKeyDown(265))
-		if ((motionState == 3 || networkAction == 3) && gridPosition.y > 1) { 
+		if ((motionState == 3 || networkAction == 3) && gridPosition.y > 0) { 
 			moveUp();
 			keyDown = true;
 		}
@@ -141,7 +142,7 @@ public class Player {
 			networkAction = random.nextInt((3 - 0) + 1);
 		}
 		
-		if (gridPosition.x == 1 && networkAction == 1) {
+		if (gridPosition.x == 0 && networkAction == 1) {
 			networkAction = random.nextInt((3 - 0) + 1);
 		}
 		
@@ -149,8 +150,23 @@ public class Player {
 			networkAction = random.nextInt((3 - 0) + 1);
 		}
 		
-		if (gridPosition.y == 1 && networkAction == 3) {
+		if (gridPosition.y == 0 && networkAction == 3) {
 			networkAction = random.nextInt((3 - 0) + 1);
+		}
+	}
+	
+	private void handleGoal() {
+		if (gridPosition.equals(network.goal)) {
+			tempTrail.add(getMidpoint());
+			reset();
+		}
+		else {
+			for (Point negativeGoal : network.negativeGoals) {
+				if (gridPosition.equals(negativeGoal)) {
+					tempTrail.add(getMidpoint());
+					reset();
+				}
+			}
 		}
 	}
 	
@@ -161,10 +177,8 @@ public class Player {
 			gridPosition.x += 1;
 			network.setAgentPosition(gridPosition.x, gridPosition.y);
 			network.setQ(new Point(gridPosition.x - 1, gridPosition.y), 0);
-			if (gridPosition.equals(network.goal)) {
-				tempTrail.add(getMidpoint());
-				reset();
-			}
+			handleGoal();
+			
 			networkAction = network.getAction();
 			motionState = -1;
 		}
@@ -180,10 +194,8 @@ public class Player {
 			gridPosition.x -= 1;
 			network.setAgentPosition(gridPosition.x, gridPosition.y);
 			network.setQ(new Point(gridPosition.x + 1, gridPosition.y), 1);
-			if (gridPosition.equals(network.goal)) {
-				tempTrail.add(getMidpoint());
-				reset();
-			}
+			handleGoal();
+			
 			networkAction = network.getAction();
 			motionState = -1;
 		}
@@ -199,10 +211,8 @@ public class Player {
 			gridPosition.y += 1;
 			network.setAgentPosition(gridPosition.x, gridPosition.y);
 			network.setQ(new Point(gridPosition.x, gridPosition.y - 1), 2);
-			if (gridPosition.equals(network.goal)) {
-				tempTrail.add(getMidpoint());
-				reset();
-			}
+			handleGoal();
+			
 			networkAction = network.getAction();
 			motionState = -1;
 		}
@@ -218,10 +228,8 @@ public class Player {
 			gridPosition.y -= 1;
 			network.setAgentPosition(gridPosition.x, gridPosition.y);
 			network.setQ(new Point(gridPosition.x, gridPosition.y + 1), 3);
-			if (gridPosition.equals(network.goal)) {
-				tempTrail.add(getMidpoint());
-				reset();
-			}
+			handleGoal();
+			
 			networkAction = network.getAction();
 			motionState = -1;
 		}
