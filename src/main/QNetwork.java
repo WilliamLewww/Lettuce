@@ -3,6 +3,8 @@ package main;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
@@ -60,6 +62,55 @@ public class QNetwork {
 	
 	public void setAgentPosition(int x, int y) {
 		agentPosition.setLocation(x, y);
+	}
+	
+	public int getActionProb(List<Integer> availableDirections) {
+		if (availableDirections.size() == 1) {
+			return availableDirections.get(0);
+		}
+		
+		double max = table[agentPosition.x][agentPosition.y][availableDirections.get(0)];
+		double min = table[agentPosition.x][agentPosition.y][availableDirections.get(0)];
+		List<Point2D.Double> points = new ArrayList<Point2D.Double>();
+		
+		for (int x = 0; x < availableDirections.size(); x++) {
+			points.add(new Point2D.Double(availableDirections.get(x), table[agentPosition.x][agentPosition.y][availableDirections.get(x)]));
+			
+			if (table[agentPosition.x][agentPosition.y][availableDirections.get(x)] > max) {
+				max = table[agentPosition.x][agentPosition.y][availableDirections.get(x)];
+			}
+			if (table[agentPosition.x][agentPosition.y][availableDirections.get(x)] < min ) {
+				min = table[agentPosition.x][agentPosition.y][availableDirections.get(x)];
+			}
+		}
+		
+		Collections.sort(points, new Comparator<Point2D>() {
+			@Override
+			public int compare(Point2D o1, Point2D o2) {
+				return Double.compare(o1.getY(), o2.getY());
+			}
+		});
+		
+		double total = 0;
+		for (int x = 0; x < points.size(); x++) {
+			points.get(x).y -= min;
+			points.get(x).y += 1;
+			total += points.get(x).y;
+		}
+		
+		Random random = new Random();
+		int randomInt = random.nextInt(101);
+		double cumulative = 0;
+		
+		for (int x = 0; x < points.size(); x++) {
+			cumulative += (points.get(x).y / total) * 100;
+			
+			if (randomInt < cumulative) {
+				return (int)points.get(x).x;
+			}
+		}
+		
+		return -50;
 	}
 	
 	public int getAction(List<Integer> availableDirections) {

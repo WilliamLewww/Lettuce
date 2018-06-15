@@ -87,25 +87,10 @@ public class Player {
 			handleRandomAction();
 		}
 		
-		// (!keyDown && Input.checkKeyDown(262) && !Input.checkKeyDown(263))
-		if (motionState == 0 || networkAction == 0) {
-			moveRight();
-		}
-		
-		// (!keyDown && !Input.checkKeyDown(262) && Input.checkKeyDown(263))
-		if (motionState == 1 || networkAction == 1) { 
-			moveLeft();
-		}
-		
-		// (!keyDown && Input.checkKeyDown(264) && !Input.checkKeyDown(265))
-		if (motionState == 2 || networkAction == 2) {
-			moveDown();
-		}
-		
-		// (!keyDown && !Input.checkKeyDown(264) && Input.checkKeyDown(265))
-		if (motionState == 3 || networkAction == 3) { 
-			moveUp();
-		}
+		if (motionState == 0 || networkAction == 0) { moveRight(); }
+		if (motionState == 1 || networkAction == 1) {  moveLeft(); }
+		if (motionState == 2 || networkAction == 2) { moveDown(); }
+		if (motionState == 3 || networkAction == 3) {  moveUp(); }
 	}
 	
 	private void handleRandomAction() {
@@ -138,6 +123,7 @@ public class Player {
 		else {
 			if (motionState == -1) {
 				networkAction = network.getAction(boundsList);
+				//networkAction = network.getActionProb(boundsList);
 			}
 		}
 	}
