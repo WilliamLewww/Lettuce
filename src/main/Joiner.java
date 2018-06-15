@@ -4,8 +4,12 @@ import engine.Input;
 
 public class Joiner {
 	Player player;
+	static Tilemap tilemap;
 	
 	public void initialize() {
+		tilemap = new Tilemap(20, 14);
+		tilemap.grabFromFile("map");
+		
 		player = new Player();
 	}
 	
@@ -18,6 +22,7 @@ public class Joiner {
 	}
 	
 	public void draw() {
+		tilemap.draw();
 		player.draw();
 	}
 }

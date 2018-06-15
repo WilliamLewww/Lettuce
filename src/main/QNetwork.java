@@ -8,8 +8,10 @@ import java.util.Random;
 
 import engine.Drawing;
 
+//QNetwork -> setGoal -> setAgentPosition ||| getAction -> setAgentPosition -> movePlayer -> setQ
 public class QNetwork {
-	Point agentPosition, goal;
+	Point agentPosition;
+	List<Point> goals;
 	List<Point> negativeGoals;
 	
 	double[][][] table;
@@ -17,7 +19,7 @@ public class QNetwork {
 	float gamma = 0.8f;
 	float delta = 1.2f;
 	
-	float negativeFeedback = -0.05f;
+	float negativeFeedback = -0.5f;
 	
 	int[] color = { 0, 255, 0 , 255 };
 	int[] colorN = { 255, 0, 0, 255 };
@@ -27,7 +29,7 @@ public class QNetwork {
 	QNetwork(int width, int height, int actions, boolean negativeFeedback, boolean negativeChain) {
 		table = new double[width][height][actions];
 		agentPosition = new Point();
-		goal = new Point();
+		goals = new ArrayList<Point>();
 		negativeGoals = new ArrayList<Point>();
 		
 		this.negativeChain = negativeChain;
@@ -36,20 +38,25 @@ public class QNetwork {
 		}
 	}
 	
-	public void setGoal(int x, int y) {
-		goal.setLocation(x, y);
+	public void addGoal(Point point) {
+		goals.add(new Point(point.x, point.y));
 	}
 	
-	public void addNegativeGoal(int x, int y) {
-		negativeGoals.add(new Point(x, y));
+	public void addGoals(Point[] points) {
+		for (int x = 0; x < points.length; x++) {
+			goals.add(new Point(points[x].x, points[x].y));
+		}
 	}
 	
-	// QNetwork -> setGoal -> setAgentPosition ||| getAction -> setAgentPosition -> movePlayer -> setQ
+	public void addNegativeGoal(Point point) {
+		negativeGoals.add(new Point(point.x, point.y));
+	}
 	
-	// 0 = Right
-	// 1 = Left
-	// 2 = Down
-	// 3 = Up
+	public void addNegativeGoal(Point[] points) {
+		for (int x = 0; x < points.length; x++) {
+			negativeGoals.add(new Point(points[x].x, points[x].y));
+		}
+	}
 	
 	public void setAgentPosition(int x, int y) {
 		agentPosition.setLocation(x, y);
@@ -141,12 +148,14 @@ public class QNetwork {
 			table[prePosition.x][prePosition.y][preAction] += gamma * highestValue;
 		}
 		
-		if (agentPosition.equals(goal)) {
-			if (table[goal.x][goal.y][0] == 0) {
-				table[goal.x][goal.y][0] = 100;
-			}
-			else {
-				table[goal.x][goal.y][0] = table[goal.x][goal.y][0] * delta;
+		for (Point goal : goals) {
+			if (agentPosition.equals(goal)) {
+				if (table[goal.x][goal.y][0] == 0) {
+					table[goal.x][goal.y][0] = 100;
+				}
+				else {
+					table[goal.x][goal.y][0] = table[goal.x][goal.y][0] * delta;
+				}
 			}
 		}
 		
@@ -169,7 +178,15 @@ public class QNetwork {
 					if (table[x][y][z] > 0) {
 						switch (z) {
 						case 0:
-							if (x == goal.x && y == goal.y) {
+							boolean isGoal = false;
+							
+							for (Point goal : goals) {
+								if (x == goal.x && y == goal.y) {
+									isGoal = true;
+								}
+							}
+							
+							if (isGoal) {
 								Drawing.drawRect(new Point(x * 50, y * 50), 50, 50, color);
 							}
 							else {
@@ -223,11 +240,18 @@ public class QNetwork {
 	}
 	
 	private int[] getColorRelativeToGoal(double value) {
+		double greatestValue = 0;
+		for (Point goal : goals) {
+			if (table[goal.x][goal.y][0] < greatestValue) {
+				greatestValue = table[goal.x][goal.y][0];
+			}
+		}
+		
 		int[] color = new int[4];
 		color[0] = 0;
-		color[1] = (int)((value / table[goal.x][goal.y][0]) * 255);
+		color[1] = (int)((value / greatestValue) * 255);
 		color[2] = 0;
-		color[3] = (int)(255 - (table[goal.x][goal.y][0] / value));
+		color[3] = (int)(255 - (greatestValue / value));
 		return color;
 	}
 	
